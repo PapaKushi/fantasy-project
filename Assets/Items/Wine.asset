@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4f50de2ae7306428a4b0c680e15e7d, type: 3}
+  m_Name: Wine
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemID: goblins_rest_red
+  itemCount: 1
+  maxStack: 2
+  itemIcon: {fileID: 21300000, guid: e2f96f2a796623242be2a6e5cd2e054e, type: 3}
+  displayName: "<color=red>Goblin\u2019s Rest Red</color>"
+  description: "A cheap, rough red wine tasting of sour berries, damp oak, and something
+    faintly metallic. <b>Strong</b>, unpleasant, and <i>popular in taverns</i> because
+    it\u2019s cheap and never seems to spoil."
+  itemType: 1
