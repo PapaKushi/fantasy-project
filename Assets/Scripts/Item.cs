@@ -35,6 +35,10 @@ public class Item : ScriptableObject
     [Tooltip("Only used for equippable items (Weapon, Helmet, etc). " +
              "The 3D model spawned on the player when this item is equipped.")]
     public GameObject worldPrefab;
+
+    [Header("Combat")]
+    [Tooltip("Only used for weapon items. Damage dealt per hit.")]
+    public int damage;
 }
 
 public static class ScriptableObjectExtension

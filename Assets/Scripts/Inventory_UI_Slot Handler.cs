@@ -117,6 +117,14 @@ public class Inventory_UI_SlotHandler : MonoBehaviour, IPointerClickHandler, IPo
             spawnedVisual = Instantiate(item.worldPrefab, attachPoint);
             spawnedVisual.transform.localPosition = Vector3.zero;
             spawnedVisual.transform.localRotation = Quaternion.identity;
+
+            // If this equipped item is a weapon, hand its data (damage,
+            // etc) to the Weapon_Attack script on the spawned prefab.
+            Weapon_Attack weaponScript = spawnedVisual.GetComponent<Weapon_Attack>();
+            if (weaponScript != null)
+            {
+                weaponScript.weaponItem = item;
+            }
         }
     }
 

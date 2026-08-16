@@ -19,4 +19,5 @@ MonoBehaviour:
   displayName: Iron Sword
   description: A simple iron sword.
   itemType: 2
-  worldPrefab: {fileID: 6950387488907225396, guid: c612c430d3edb7c499040725f6f66d26, type: 3}
+  worldPrefab: {fileID: 5291510533619947204, guid: e347ac1e77eb8f147bd7a9e3a1154c06, type: 3}
+  damage: 10
