@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db4f50de2ae7306428a4b0c680e15e7d, type: 3}
-  m_Name: Wooden Bowl
+  m_Name: Wooden_Bowl
   m_EditorClassIdentifier: Assembly-CSharp::Item
   itemID: wooden_bowl
   itemCount: 1
