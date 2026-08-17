@@ -1,4 +1,4 @@
-# [Game Name]
+# Fantasy Project
 
 A stylized 3D fantasy RPG built in Unity.
 
