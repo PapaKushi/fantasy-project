@@ -1793,7 +1793,7 @@ GameObject:
   - component: {fileID: 6648332534242353615}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1877,6 +1877,7 @@ MonoBehaviour:
   walkStepInterval: 0.5
   sprintStepInterval: 0.3
   velocityThreshhold: 2
+  knockbackDecay: 4
 --- !u!1 &952780224430445971
 GameObject:
   m_ObjectHideFlags: 0

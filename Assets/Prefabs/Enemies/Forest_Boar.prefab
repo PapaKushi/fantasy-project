@@ -141,6 +141,14 @@ MonoBehaviour:
   chaseSpeed: 3.5
   stoppingDistance: 1.5
   destinationUpdateInterval: 0.2
+  attackRange: 2
+  attackDamage: 5
+  attackCooldown: 1.5
+  leashRadius: 12
+  wanderSpeed: 1.5
+  wanderRadius: 6
+  minPauseTime: 3
+  maxPauseTime: 7
 --- !u!65 &6205630031814254446
 BoxCollider:
   m_ObjectHideFlags: 0

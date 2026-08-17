@@ -6,7 +6,8 @@ using UnityEngine.AI;
 ///
 /// 1. Wander  - walks to a random nearby point, pauses, repeats.
 /// 2. Chase   - triggered by Enemy_Health's OnDamaged event; paths
-///              straight at the player.
+///              toward the player, and attacks (on a cooldown) once
+///              close enough.
 /// 3. Return  - if the player runs too far from this enemy's spawn
 ///              point (leashRadius), it gives up chasing and walks
 ///              back home, then resumes wandering.
@@ -22,11 +23,18 @@ public class Enemy_AI : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform player;
+    private Player_Health playerHealth;
 
     [Header("Chase Settings")]
     [SerializeField] private float chaseSpeed = 3.5f;
     [SerializeField] private float stoppingDistance = 1.5f; // don't walk into the player
     [SerializeField] private float destinationUpdateInterval = 0.2f; // how often to re-aim at the player
+
+    [Header("Attack Settings")]
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private int attackDamage = 5;
+    [SerializeField] private float attackCooldown = 1.5f;
+    private float nextAttackTime;
 
     [Header("Leash Settings")]
     [Tooltip("If the enemy strays this far from its spawn point while chasing, it gives up and returns home.")]
@@ -65,6 +73,11 @@ public class Enemy_AI : MonoBehaviour
             {
                 player = playerObject.transform;
             }
+        }
+
+        if (player != null)
+        {
+            playerHealth = player.GetComponent<Player_Health>();
         }
     }
 
@@ -152,10 +165,37 @@ public class Enemy_AI : MonoBehaviour
             return;
         }
 
-        if (Time.time >= nextDestinationUpdateTime)
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (distanceToPlayer <= attackRange)
+        {
+            // Close enough to attack - stop moving and try to attack
+            agent.ResetPath();
+            TryAttack();
+        }
+        else if (Time.time >= nextDestinationUpdateTime)
         {
             agent.SetDestination(player.position);
             nextDestinationUpdateTime = Time.time + destinationUpdateInterval;
+        }
+    }
+
+    private void TryAttack()
+    {
+        if (Time.time < nextAttackTime)
+        {
+            return; // still on cooldown
+        }
+
+        nextAttackTime = Time.time + attackCooldown;
+
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(attackDamage);
+        }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name} tried to attack but found no Player_Health on the player.");
         }
     }
 
