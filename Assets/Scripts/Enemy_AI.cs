@@ -7,10 +7,14 @@ using UnityEngine.AI;
 /// 1. Wander  - walks to a random nearby point, pauses, repeats.
 /// 2. Chase   - triggered by Enemy_Health's OnDamaged event; paths
 ///              toward the player, and attacks (on a cooldown) once
-///              close enough.
+///              close enough, playing an attack animation.
 /// 3. Return  - if the player runs too far from this enemy's spawn
 ///              point (leashRadius), it gives up chasing and walks
 ///              back home, then resumes wandering.
+///
+/// Also drives the rigged mesh's Animator "Speed" float from the
+/// NavMeshAgent's current velocity, so walk/idle animations blend
+/// automatically based on actual movement rather than AI state.
 ///
 /// Attach this to any enemy that should share this same behavior -
 /// not specific to any one creature.
@@ -48,6 +52,7 @@ public class Enemy_AI : MonoBehaviour
 
     private Enemy_Health health;
     private NavMeshAgent agent;
+    private Animator animator; // lives on the rigged mesh, usually a child object
     private State state = State.Wander;
     private Vector3 spawnPosition;
     private float nextDestinationUpdateTime;
@@ -58,6 +63,7 @@ public class Enemy_AI : MonoBehaviour
     {
         health = GetComponent<Enemy_Health>();
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
         spawnPosition = transform.position;
 
         agent.stoppingDistance = stoppingDistance;
@@ -115,6 +121,24 @@ public class Enemy_AI : MonoBehaviour
                 UpdateReturn();
                 break;
         }
+
+        UpdateAnimator();
+    }
+
+    /// <summary>
+    /// Feeds the NavMeshAgent's current speed into the Animator's
+    /// "Speed" float, so the Idle/Walk transitions react to actual
+    /// movement rather than needing any manual state syncing.
+    /// </summary>
+    private void UpdateAnimator()
+    {
+        if (animator == null)
+        {
+            return;
+        }
+
+        float currentSpeed = agent.velocity.magnitude;
+        animator.SetFloat("Speed", currentSpeed);
     }
 
     private void UpdateWander()
@@ -188,6 +212,11 @@ public class Enemy_AI : MonoBehaviour
         }
 
         nextAttackTime = Time.time + attackCooldown;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
 
         if (playerHealth != null)
         {
