@@ -67,6 +67,10 @@ public class Inventory_Manager : MonoBehaviour
     /// </summary>
     public bool AddItem(Item newItem)
     {
+        // Captured before the stacking loop below mutates newItem.itemCount,
+        // so quest reporting reflects the full original pickup amount.
+        int originalAmount = newItem.itemCount;
+
         // First pass: try to stack onto a matching slot that has room
         foreach (Inventory_UI_SlotHandler slot in slots)
         {
@@ -77,6 +81,7 @@ public class Inventory_Manager : MonoBehaviour
 
                 if (newItem.itemCount <= 0)
                 {
+                    ReportPickupToQuests(newItem.itemID, originalAmount);
                     return true; // fully absorbed into this stack
                 }
                 // otherwise keep looping in case another matching slot has room
@@ -89,11 +94,20 @@ public class Inventory_Manager : MonoBehaviour
             if (slot.item == null)
             {
                 PlaceInInventory(slot, newItem);
+                ReportPickupToQuests(newItem.itemID, originalAmount);
                 return true;
             }
         }
 
         // No matching slot with room and no empty slot left
         return false;
+    }
+
+    private void ReportPickupToQuests(string itemID, int amount)
+    {
+        if (QuestManager.instance != null)
+        {
+            QuestManager.instance.ReportItemCollected(itemID, amount);
+        }
     }
 }

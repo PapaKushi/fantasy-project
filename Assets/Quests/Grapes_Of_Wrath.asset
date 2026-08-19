@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d44c61f28db8a1c46abbf0e5ff620821, type: 3}
+  m_Name: Grapes_Of_Wrath
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  questID: quest_02
+  questName: Grapes of Wrath
+  description: Gather 3 bottles of wine
+  questType: 0
+  targetID: goblins_rest_red
+  requiredAmount: 3

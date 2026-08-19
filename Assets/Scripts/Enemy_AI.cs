@@ -16,8 +16,10 @@ using UnityEngine.AI;
 /// NavMeshAgent's current velocity, so walk/idle animations blend
 /// automatically based on actual movement rather than AI state.
 ///
-/// Attach this to any enemy that should share this same behavior -
-/// not specific to any one creature.
+/// All tunable numbers (speeds, ranges, damage, etc) come from the
+/// assigned EnemyData asset rather than being hardcoded here, so this
+/// same script/prefab structure works for any enemy type - a new
+/// enemy just needs its own EnemyData asset, not a script copy.
 /// </summary>
 [RequireComponent(typeof(Enemy_Health))]
 [RequireComponent(typeof(NavMeshAgent))]
@@ -25,30 +27,14 @@ public class Enemy_AI : MonoBehaviour
 {
     private enum State { Wander, Chase, Return }
 
+    [Header("Data")]
+    [SerializeField] private EnemyData data;
+
     [Header("References")]
     [SerializeField] private Transform player;
     private Player_Health playerHealth;
 
-    [Header("Chase Settings")]
-    [SerializeField] private float chaseSpeed = 3.5f;
-    [SerializeField] private float stoppingDistance = 1.5f; // don't walk into the player
-    [SerializeField] private float destinationUpdateInterval = 0.2f; // how often to re-aim at the player
-
-    [Header("Attack Settings")]
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private int attackDamage = 5;
-    [SerializeField] private float attackCooldown = 1.5f;
     private float nextAttackTime;
-
-    [Header("Leash Settings")]
-    [Tooltip("If the enemy strays this far from its spawn point while chasing, it gives up and returns home.")]
-    [SerializeField] private float leashRadius = 12f;
-
-    [Header("Wander Settings")]
-    [SerializeField] private float wanderSpeed = 1.5f;
-    [SerializeField] private float wanderRadius = 6f; // how far from spawn it'll wander
-    [SerializeField] private float minPauseTime = 1.5f;
-    [SerializeField] private float maxPauseTime = 4f;
 
     private Enemy_Health health;
     private NavMeshAgent agent;
@@ -66,7 +52,15 @@ public class Enemy_AI : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         spawnPosition = transform.position;
 
-        agent.stoppingDistance = stoppingDistance;
+        if (data == null)
+        {
+            Debug.LogError($"{gameObject.name} has no EnemyData assigned on Enemy_AI.");
+        }
+        else
+        {
+            agent.stoppingDistance = data.stoppingDistance;
+        }
+
         agent.updateRotation = true; // let the agent handle facing its movement direction
 
         if (player == null)
@@ -109,6 +103,11 @@ public class Enemy_AI : MonoBehaviour
 
     private void Update()
     {
+        if (data == null)
+        {
+            return; // can't run without stats assigned
+        }
+
         switch (state)
         {
             case State.Wander:
@@ -143,7 +142,7 @@ public class Enemy_AI : MonoBehaviour
 
     private void UpdateWander()
     {
-        agent.speed = wanderSpeed;
+        agent.speed = data.wanderSpeed;
 
         if (isPausing)
         {
@@ -159,7 +158,7 @@ public class Enemy_AI : MonoBehaviour
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             isPausing = true;
-            pauseUntilTime = Time.time + Random.Range(minPauseTime, maxPauseTime);
+            pauseUntilTime = Time.time + Random.Range(data.minPauseTime, data.maxPauseTime);
         }
     }
 
@@ -167,10 +166,10 @@ public class Enemy_AI : MonoBehaviour
     {
         // Random point within wanderRadius of the spawn position, then
         // snapped onto the NavMesh so it's always a valid destination.
-        Vector2 randomCircle = Random.insideUnitCircle * wanderRadius;
+        Vector2 randomCircle = Random.insideUnitCircle * data.wanderRadius;
         Vector3 randomPoint = spawnPosition + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
-        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, data.wanderRadius, NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
         }
@@ -178,11 +177,11 @@ public class Enemy_AI : MonoBehaviour
 
     private void UpdateChase()
     {
-        agent.speed = chaseSpeed;
+        agent.speed = data.chaseSpeed;
 
         // Give up and head home if the player got too far away
         float distanceFromSpawn = Vector3.Distance(transform.position, spawnPosition);
-        if (distanceFromSpawn > leashRadius)
+        if (distanceFromSpawn > data.leashRadius)
         {
             state = State.Return;
             agent.SetDestination(spawnPosition);
@@ -191,7 +190,7 @@ public class Enemy_AI : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= attackRange)
+        if (distanceToPlayer <= data.attackRange)
         {
             // Close enough to attack - stop moving and try to attack
             agent.ResetPath();
@@ -200,7 +199,7 @@ public class Enemy_AI : MonoBehaviour
         else if (Time.time >= nextDestinationUpdateTime)
         {
             agent.SetDestination(player.position);
-            nextDestinationUpdateTime = Time.time + destinationUpdateInterval;
+            nextDestinationUpdateTime = Time.time + data.destinationUpdateInterval;
         }
     }
 
@@ -211,7 +210,7 @@ public class Enemy_AI : MonoBehaviour
             return; // still on cooldown
         }
 
-        nextAttackTime = Time.time + attackCooldown;
+        nextAttackTime = Time.time + data.attackCooldown;
 
         if (animator != null)
         {
@@ -220,7 +219,7 @@ public class Enemy_AI : MonoBehaviour
 
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(attackDamage);
+            playerHealth.TakeDamage(data.attackDamage);
         }
         else
         {
@@ -230,13 +229,13 @@ public class Enemy_AI : MonoBehaviour
 
     private void UpdateReturn()
     {
-        agent.speed = wanderSpeed;
+        agent.speed = data.wanderSpeed;
 
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             state = State.Wander;
             isPausing = true;
-            pauseUntilTime = Time.time + Random.Range(minPauseTime, maxPauseTime);
+            pauseUntilTime = Time.time + Random.Range(data.minPauseTime, data.maxPauseTime);
         }
     }
 }

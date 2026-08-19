@@ -477,7 +477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc41f3739fcec2546b5ce22549cdfe45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Health
-  maxHealth: 30
+  data: {fileID: 11400000, guid: 89549f1e71bf0a04e8bc5f3462d4d339, type: 2}
 --- !u!65 &3302541307304293511
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -533,18 +533,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f312b04a1b8f09f45a0e96f7f32e5022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_AI
+  data: {fileID: 11400000, guid: 89549f1e71bf0a04e8bc5f3462d4d339, type: 2}
   player: {fileID: 0}
-  chaseSpeed: 3.5
-  stoppingDistance: 1.5
-  destinationUpdateInterval: 0.2
-  attackRange: 2
-  attackDamage: 5
-  attackCooldown: 1.5
-  leashRadius: 12
-  wanderSpeed: 1.5
-  wanderRadius: 6
-  minPauseTime: 1.5
-  maxPauseTime: 4
 --- !u!95 &3187252165840948665
 Animator:
   serializedVersion: 7

@@ -44,10 +44,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float sprintStepInterval = 0.3f;
     [SerializeField] private float velocityThreshhold = 2.0f;
 
-    [Header("Knockback")]
-    [Tooltip("How quickly knockback velocity decays back to zero. Higher = shorter, snappier knockback.")]
-    [SerializeField] private float knockbackDecay = 4f;
-
     private float baseCameraY;
     private float currentCameraFOV;
     private int lastPlayedIndex = -1;
@@ -56,7 +52,6 @@ public class FirstPersonController : MonoBehaviour
     private Camera mainCamera;
     private float verticalRotation;
     private Vector3 currentMovement = Vector3.zero;
-    private Vector3 knockbackVelocity = Vector3.zero;
     private CharacterController characterController;
 
     private void Start()
@@ -73,25 +68,15 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleMovement(); // Handle walking and sprinting.
 
-        // Skip look input entirely while a UI menu (e.g. the inventory) is open,
-        // so mouse movement doesn't spin the camera while managing items.
-        if (!Inventory_Toggle.IsInventoryOpen)
+        // Skip look input entirely while a UI menu (inventory or quest log)
+        // is open, so mouse movement doesn't spin the camera while
+        // managing items or reading quests.
+        if (!Inventory_Toggle.IsInventoryOpen && !Quest_Log_Toggle.IsQuestLogOpen)
         {
             HandleRotation(); // Handle looking around.
         }
 
         HandleFootsteps(); // Handle the sounds related to walking/sprinting.
-    }
-
-    /// <summary>
-    /// Adds an instant push to the player that decays back to zero over
-    /// time (see knockbackDecay), separate from normal walk/sprint
-    /// movement. Call this from wherever damage/attacks are applied,
-    /// e.g. Enemy_AI.TryAttack().
-    /// </summary>
-    public void ApplyKnockback(Vector3 force)
-    {
-        knockbackVelocity += force;
     }
 
     void HandleMovement()
@@ -113,11 +98,7 @@ public class FirstPersonController : MonoBehaviour
         currentMovement.x = horizontalMovement.x;
         currentMovement.z = horizontalMovement.z;
 
-        // Blend in any active knockback on top of normal movement, then
-        // decay it back toward zero so the push fades out smoothly
-        // rather than ending abruptly or lasting forever.
-        characterController.Move((currentMovement + knockbackVelocity) * Time.deltaTime);
-        knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
+        characterController.Move(currentMovement * Time.deltaTime);
 
         isMoving = verticalInput != 0 || horizontalInput != 0;
 

@@ -2,22 +2,23 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Basic health for a test enemy. Call TakeDamage() when it's hit;
-/// the object destroys itself once health reaches zero.
-///
-/// Fires OnDamaged whenever it takes damage, so an AI script (e.g.
-/// Boar_AI) can react - for example, switching from idle to chasing
-/// the attacker the first time it's hit.
+/// Basic health for an enemy. Call TakeDamage() when it's hit; the
+/// object destroys itself once health reaches zero. maxHealth comes
+/// from the assigned EnemyData asset rather than being hardcoded per
+/// prefab, so different enemy types can share this same script.
 /// </summary>
 public class Enemy_Health : MonoBehaviour
 {
-    [SerializeField] private int maxHealth = 30;
+    [SerializeField] private EnemyData data;
+
+    private int maxHealth;
     private int currentHealth;
 
     public event Action OnDamaged;
 
     private void Awake()
     {
+        maxHealth = data != null ? data.maxHealth : 30;
         currentHealth = maxHealth;
     }
 
@@ -36,6 +37,11 @@ public class Enemy_Health : MonoBehaviour
 
     private void Die()
     {
+        if (data != null && QuestManager.instance != null)
+        {
+            QuestManager.instance.ReportEnemyKilled(data.enemyID);
+        }
+
         Destroy(gameObject);
     }
 }

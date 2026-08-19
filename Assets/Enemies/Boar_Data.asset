@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f21fc122a337fb34392d8120d8b0d941, type: 3}
+  m_Name: Boar_Data
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyID: forest_boar
+  enemyName: Forest Boar
+  maxHealth: 50
+  wanderSpeed: 1.5
+  chaseSpeed: 3.5
+  stoppingDistance: 1.5
+  wanderRadius: 6
+  leashRadius: 12
+  minPauseTime: 1.5
+  maxPauseTime: 4
+  destinationUpdateInterval: 0.2
+  attackRange: 2
+  attackDamage: 5
+  attackCooldown: 1.5
